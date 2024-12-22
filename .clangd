@@ -1,0 +1,2 @@
+CompileFlags:
+  Add: ["-DDEBUG_BUILD", "-D_POSIX_C_SOURCE=200112L", "-Wno-undefined-internal"]

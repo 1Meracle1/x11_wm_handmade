@@ -1,0 +1,7 @@
+#include "memory/memory.c"
+#include "os/os.c"
+#include "log/log.c"
+#include "containers/array.c"
+#include "containers/string.c"
+#include "containers/hash_map.c"
+#include "encoding/ini/ini.c"
