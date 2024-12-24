@@ -41,7 +41,7 @@ typedef bool (*KeyIsEmpty)(String key);
 
 #define HashMapTemplate(type_key, type_value)                                                      \
   HashMapTemplatePrefix(type_key, type_value, HashMap_##type_key##To##type_value,                  \
-                        HashMap_##type_key##To##type_value)
+                        HashMap_##type_key##To##type_value##_)
 
 #define HashMapTemplatePrefix(type_key, type_value, struct_name, funcs_prefix)                      \
   typedef struct                                                                                    \
@@ -171,11 +171,11 @@ typedef bool (*KeyIsEmpty)(String key);
   } Pair_##type_key##To##type_value;                                                                \
   ArrayTemplate(Pair_##type_key##To##type_value);                                                   \
                                                                                                     \
-  internal Array_Pair_##type_key##To##type_value funcs_prefix##KeyValuePairs(Allocator   allocator, \
+  internal ArrayPair_##type_key##To##type_value funcs_prefix##KeyValuePairs(Allocator   allocator, \
                                                                              struct_name map)       \
   {                                                                                                 \
-    Array_Pair_##type_key##To##type_value pairs =                                                   \
-        Array_Pair_##type_key##To##type_value##_Init(allocator, map.capacity);                      \
+    ArrayPair_##type_key##To##type_value pairs =                                                    \
+        ArrayPair_##type_key##To##type_value##_Init(allocator, map.capacity);                       \
     for (u64 i = 0; i < map.capacity; i += 1)                                                       \
     {                                                                                               \
       if (!map.key_is_empty_func(map.keys[i]))                                                      \
@@ -183,7 +183,7 @@ typedef bool (*KeyIsEmpty)(String key);
         Pair_##type_key##To##type_value p = {0};                                                    \
         p.key                             = map.keys[i];                                            \
         p.value                           = map.values[i];                                          \
-        Array_Pair_##type_key##To##type_value##_Push(allocator, &pairs, p);                         \
+        ArrayPair_##type_key##To##type_value##_Push(allocator, &pairs, p);                          \
       }                                                                                             \
     }                                                                                               \
     return pairs;                                                                                   \

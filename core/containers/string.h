@@ -78,15 +78,15 @@ internal String StringFromF64(Allocator allocator, f64 value, u64 precision);
 
 ArrayTemplate(String);
 
-internal String       Array_String_Join(Allocator allocator, Array_String arr, String sep);
-internal Array_String StrSplit(Allocator allocator, String s, String sep);
-// internal Array_String StrSplitMulti(Allocator allocator, String s, Array_String substrs);
-// internal Array_String StrSplitLines(Allocator allocator, String s);
+internal String      ArrayString_Join(Allocator allocator, ArrayString arr, String sep);
+internal ArrayString StrSplit(Allocator allocator, String s, String sep);
+// internal ArrayString StrSplitMulti(Allocator allocator, String s, ArrayString substrs);
+// internal ArrayString StrSplitLines(Allocator allocator, String s);
 
 // Owns its data
 typedef struct
 {
-  Array_String data;
+  ArrayString data;
 } StrBuilder;
 
 internal StrBuilder StrBuilder_Init(Allocator allocator, u64 min_capacity);

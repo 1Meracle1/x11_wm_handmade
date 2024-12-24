@@ -9,5 +9,6 @@
 #include "containers/string.h"
 #include "containers/hash_map.h"
 #include "encoding/ini/ini.h"
+#include "encoding/hex/hex.h"
 
 #endif

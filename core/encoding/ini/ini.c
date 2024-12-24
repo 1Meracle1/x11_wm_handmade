@@ -7,8 +7,7 @@ internal IniValue IniValueFromString(String s)
   IniValue res = {0};
   if (s.size == 0)
   {
-    res.tag               = IniValue_String;
-    res.data.value_string = StrLit("");
+    res.tag = IniValue_String;
   }
   else
   {
@@ -51,7 +50,7 @@ internal IniValue IniValueFromString(String s)
       if (contains_non_digit_chars)
       {
         res.tag               = IniValue_String;
-        res.data.value_string = s;
+        res.data.value_String = s;
       }
       else
       {
@@ -96,10 +95,10 @@ internal IniMap Ini_LoadMapFromPath(Allocator allocator, String path)
 
 internal IniMap Ini_LoadMapFromString(Allocator allocator, String src)
 {
-  IniMap       res          = IniMap_Init(allocator, 50, HashFromString, StrEquals, StrIsEmpty);
-  String       section_name = {0};
-  IniSection   section      = {0};
-  Array_String lines        = StrSplit(allocator, src, StrLit("\n"));
+  IniMap      res          = IniMap_Init(allocator, 50, HashFromString, StrEquals, StrIsEmpty);
+  String      section_name = {0};
+  IniSection  section      = {0};
+  ArrayString lines        = StrSplit(allocator, src, StrLit("\n"));
   for (u64 i = 0; i < lines.size; i += 1)
   {
     String line = StrTrimSpaces(lines.data[i]);
@@ -131,7 +130,7 @@ internal IniMap Ini_LoadMapFromString(Allocator allocator, String src)
         {
           section_name       = StrSubstr(line, 2, end_idx);
           section.tag        = IniSection_Array;
-          section.data.array = Array_String_Init(allocator, 20);
+          section.data.array = ArrayString_Init(allocator, 20);
         }
         else
         {
@@ -145,7 +144,7 @@ internal IniMap Ini_LoadMapFromString(Allocator allocator, String src)
 
     if (section.tag == IniSection_Array)
     {
-      Array_String_Push(allocator, &section.data.array, line);
+      ArrayString_Push(allocator, &section.data.array, line);
     }
     else
     {
@@ -166,7 +165,7 @@ internal IniMap Ini_LoadMapFromString(Allocator allocator, String src)
   {
     IniMap_Push(allocator, &res, section_name, section);
   }
-  Array_String_Deinit(allocator, &lines);
+  ArrayString_Deinit(allocator, &lines);
 
   return res;
 }

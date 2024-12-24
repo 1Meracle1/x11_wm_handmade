@@ -5,3 +5,4 @@
 #include "containers/string.c"
 #include "containers/hash_map.c"
 #include "encoding/ini/ini.c"
+#include "encoding/hex/hex.c"

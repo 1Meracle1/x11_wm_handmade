@@ -14,6 +14,10 @@
 #define DEBUG_BUILD
 #endif
 
+#ifndef PROJECT_DIR
+#define PROJECT_DIR ""
+#endif
+
 #define internal [[maybe_unused]] static
 
 #define Bytes(n) (n)
@@ -78,5 +82,20 @@ typedef i32      b32;
 typedef i64      b64;
 typedef float    f32;
 typedef double   f64;
+
+typedef struct
+{
+  u8 x;
+  u8 y;
+  u8 z;
+} Vec3;
+
+typedef struct
+{
+  u8 x;
+  u8 y;
+  u8 z;
+  u8 w;
+} Vec4;
 
 #endif

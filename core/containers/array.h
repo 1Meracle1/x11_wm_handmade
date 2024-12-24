@@ -3,18 +3,20 @@
 
 #include "../core_defines.h"
 
-#define ArrayTemplate(type)                                                                        \
+#define ArrayTemplate(type) ArrayTemplatePrefix(type, Array##type, Array##type##_)
+
+#define ArrayTemplatePrefix(type, struct_name, funcs_prefix)                                       \
   typedef struct                                                                                   \
   {                                                                                                \
     type *data;                                                                                    \
     u64   size;                                                                                    \
     u64   capacity;                                                                                \
-  } Array_##type;                                                                                  \
+  } struct_name;                                                                                   \
                                                                                                    \
-  internal Array_##type Array_##type##_Init(Allocator allocator, u64 capacity)                     \
+  internal struct_name funcs_prefix##Init(Allocator allocator, u64 capacity)                       \
   {                                                                                                \
     Assert(capacity > 0);                                                                          \
-    Array_##type res;                                                                              \
+    struct_name res;                                                                               \
     res.size     = 0;                                                                              \
     res.capacity = capacity;                                                                       \
     res.data     = Alloc(type, res.capacity);                                                      \
@@ -25,22 +27,22 @@
     return res;                                                                                    \
   }                                                                                                \
                                                                                                    \
-  internal Array_##type Array_##type##_InitDefault(Allocator allocator)                            \
+  internal struct_name funcs_prefix##InitDefault(Allocator allocator)                              \
   {                                                                                                \
-    return Array_##type##_Init(allocator, 1);                                                      \
+    return funcs_prefix##Init(allocator, 1);                                                       \
   }                                                                                                \
                                                                                                    \
-  internal void Array_##type##_Deinit(Allocator allocator, Array_##type *array)                    \
+  internal void funcs_prefix##Deinit(Allocator allocator, struct_name *array)                      \
   {                                                                                                \
     if (array && array->capacity > 0)                                                              \
     {                                                                                              \
-      Free(array->data, array->capacity);                                                              \
+      Free(array->data, array->capacity);                                                          \
       array->capacity = 0;                                                                         \
       array->size     = 0;                                                                         \
     }                                                                                              \
   }                                                                                                \
                                                                                                    \
-  internal void Array_##type##_Reset(Array_##type *array)                                          \
+  internal void funcs_prefix##Reset(struct_name *array)                                            \
   {                                                                                                \
     if (array->size)                                                                               \
     {                                                                                              \
@@ -49,7 +51,7 @@
     array->size = 0;                                                                               \
   }                                                                                                \
                                                                                                    \
-  internal AllocationError Array_##type##_Push(Allocator allocator, Array_##type *array, type str) \
+  internal AllocationError funcs_prefix##Push(Allocator allocator, struct_name *array, type str)   \
   {                                                                                                \
     Assert(array);                                                                                 \
     AllocationError res = AllocationError_None;                                                    \
@@ -77,8 +79,8 @@
     return res;                                                                                    \
   }                                                                                                \
                                                                                                    \
-  internal AllocationError Array_##type##_Append(Allocator allocator, Array_##type *dest,          \
-                                                 Array_##type source)                              \
+  internal AllocationError funcs_prefix##Append(Allocator allocator, struct_name *dest,            \
+                                                struct_name source)                                \
   {                                                                                                \
     AllocationError res = AllocationError_None;                                                    \
     if (source.size + dest->size > dest->capacity)                                                 \
@@ -108,18 +110,18 @@
     return res;                                                                                    \
   }                                                                                                \
                                                                                                    \
-  internal bool Array_##type##_Empty(Array_##type array)                                           \
+  internal bool funcs_prefix##Empty(struct_name array)                                             \
   {                                                                                                \
     return array.size == 0;                                                                        \
   }                                                                                                \
                                                                                                    \
-  internal type Array_##type##_Nth(Array_##type array, u64 index)                                  \
+  internal type funcs_prefix##Nth(struct_name array, u64 index)                                    \
   {                                                                                                \
     Assert(index < array.size);                                                                    \
     return array.data[index];                                                                      \
   }                                                                                                \
                                                                                                    \
-  internal type *Array_##type##_NthPtr(Array_##type *array, u64 index)                             \
+  internal type *funcs_prefix##NthPtr(struct_name *array, u64 index)                               \
   {                                                                                                \
     Assert(index < array->size);                                                                   \
     return &array->data[index];                                                                    \

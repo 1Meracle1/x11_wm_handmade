@@ -47,7 +47,7 @@ internal bool Fs_IsDir(Allocator allocator, String path)
   return Fs_IsDirCstr(p);
 }
 
-internal FsErrors Fs_ReadDir(Allocator allocator, String directory_path, Array_String *array_str)
+internal FsErrors Fs_ReadDir(Allocator allocator, String directory_path, ArrayString *array_str)
 {
   char *p = CstrFromStr(allocator, directory_path);
   return Fs_ReadDirCstr(allocator, p, array_str);
@@ -210,7 +210,7 @@ internal bool Fs_IsDirCstr(char *path)
   return Fs_DirExistsCstr(path);
 }
 
-internal FsErrors Fs_ReadDirCstr(Allocator allocator, char *directory_path, Array_String *array_str)
+internal FsErrors Fs_ReadDirCstr(Allocator allocator, char *directory_path, ArrayString *array_str)
 {
   FsErrors err = FsErrors_None;
   DIR     *dir = opendir(directory_path);
@@ -231,7 +231,7 @@ internal FsErrors Fs_ReadDirCstr(Allocator allocator, char *directory_path, Arra
       snprintf(path, sizeof path, "%s/%s", directory_path, entry->d_name);
 
       String s = StrFromCstrClone(allocator, path, strlen(path));
-      Array_String_Push(allocator, array_str, s);
+      ArrayString_Push(allocator, array_str, s);
     }
     closedir(dir);
   }
@@ -296,16 +296,16 @@ internal String Fs_ReadFileFullCstr(Allocator allocator, char *path)
       else
       {
         rewind(file);
-        res.data      = Alloc(u8, file_size);
-        u64 read_size = fread(res.data, 1, file_size, file);
-        if (read_size != file_size)
+        res.data      = Alloc(u8, (u64)file_size);
+        u64 read_size = fread(res.data, 1, (u64)file_size, file);
+        if (read_size != (u64)file_size)
         {
-          Free(res.data, file_size);
+          Free(res.data, (u64)file_size);
           fclose(file);
         }
         else
         {
-          res.size = file_size;
+          res.size = (u64)file_size;
         }
       }
     }

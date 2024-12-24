@@ -1,5 +1,6 @@
 #include "string.h"
 #include <ctype.h>
+#include <math.h>
 
 internal char *CstrFromStr(Allocator allocator, String s)
 {
@@ -268,7 +269,7 @@ internal StrParseError F64FromStr(String s, f64 *value)
       *value = (f64)whole_num;
       if (floating_str.size != 0)
       {
-        *value += (f64)floating_num / (10 * floating_str.size);
+        *value += (f64)floating_num / (pow(10,  floating_str.size));
       }
     }
   }
@@ -356,7 +357,7 @@ internal String StringFromF64(Allocator allocator, f64 value, u64 precision)
   return s;
 }
 
-internal String Array_String_Join(Allocator allocator, Array_String arr, String sep)
+internal String ArrayString_Join(Allocator allocator, ArrayString arr, String sep)
 {
   String res = {0};
   for (u64 i = 0; i < arr.size; i += 1)
@@ -379,16 +380,16 @@ internal String Array_String_Join(Allocator allocator, Array_String arr, String 
   return res;
 }
 
-internal Array_String StrSplit(Allocator allocator, String s, String sep)
+internal ArrayString StrSplit(Allocator allocator, String s, String sep)
 {
   Assert(sep.size != 0);
-  Array_String res = Array_String_InitDefault(allocator);
+  ArrayString res = ArrayString_InitDefault(allocator);
   for (u64 i = 0; i < s.size; i += sep.size)
   {
     u64 pos = StrFindSubStr(s, sep, i);
     if (pos != s.size)
     {
-      Array_String_Push(allocator, &res, StrSubstr(s, i, pos));
+      ArrayString_Push(allocator, &res, StrSubstr(s, i, pos));
       i = pos;
     }
     else
@@ -402,40 +403,40 @@ internal Array_String StrSplit(Allocator allocator, String s, String sep)
 internal StrBuilder StrBuilder_Init(Allocator allocator, u64 min_capacity)
 {
   StrBuilder builder = {0};
-  builder.data       = Array_String_Init(allocator, min_capacity);
+  builder.data       = ArrayString_Init(allocator, min_capacity);
   return builder;
 }
 
 internal void StrBuilder_Deinit(Allocator allocator, StrBuilder *builder)
 {
-  Array_String_Deinit(allocator, &builder->data);
+  ArrayString_Deinit(allocator, &builder->data);
 }
 
 internal String StrBuilder_ToString(Allocator allocator, StrBuilder builder)
 {
-  return Array_String_Join(allocator, builder.data, StrLit(""));
+  return ArrayString_Join(allocator, builder.data, StrLit(""));
 }
 
 internal void StrBuilder_PushStr(Allocator allocator, StrBuilder *builder, String s)
 {
   String cloned_s = StrClone(allocator, s);
-  Array_String_Push(allocator, &builder->data, cloned_s);
+  ArrayString_Push(allocator, &builder->data, cloned_s);
 }
 
 internal void StrBuilder_PushCstr(Allocator allocator, StrBuilder *builder, char *cstr)
 {
   String s = StrFromCstrClone(allocator, cstr, strlen(cstr));
-  Array_String_Push(allocator, &builder->data, s);
+  ArrayString_Push(allocator, &builder->data, s);
 }
 
 internal void StrBuilder_PushU64(Allocator allocator, StrBuilder *builder, u64 num)
 {
   String s = StringFromU64(allocator, num);
-  Array_String_Push(allocator, &builder->data, s);
+  ArrayString_Push(allocator, &builder->data, s);
 }
 
 internal void StrBuilder_PushF64(Allocator allocator, StrBuilder *builder, f64 num)
 {
   String s = StringFromF64(allocator, num, 2);
-  Array_String_Push(allocator, &builder->data, s);
+  ArrayString_Push(allocator, &builder->data, s);
 }

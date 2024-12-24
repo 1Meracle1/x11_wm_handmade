@@ -1,12 +1,10 @@
 #include "../core/core.h"
+#include "config.h"
 
 #include "../core/core.c"
+#include "config.c"
 
 HashMapTemplate(String, i64);
-
-#ifndef PROJECT_DIR
-#define PROJECT_DIR ""
-#endif
 
 int main(void)
 {
@@ -14,24 +12,14 @@ int main(void)
   Allocator allocator = ArenaAllocator(arena);
 
   String root = StrLit(PROJECT_DIR);
-  Debugf("project directory: %s", root);
-  String path            = Fs_PathJoin(allocator, root, StrLit("config.ini"));
-  u64    last_mod_time   = Fs_LastModifiedTime(allocator, path);
-  String last_mod_time_s = StringFromTimeRFC3339(allocator, last_mod_time);
-  Debugf("last modified time: %s", last_mod_time_s);
 
-  IniMap                        config_map = Ini_LoadMapFromPath(allocator, path);
-  Array_Pair_StringToIniSection sections   = IniMap_KeyValuePairs(allocator, config_map);
-  Debugf("config sections: %zu", sections.size);
-  for (u64 i = 0; i < sections.size; i += 1)
-  {
-    Debugf("%zuth: %.*s", i, StrFmtVal(sections.data[i].key));
-  }
-  IniSection *keymap_section = IniMap_Find(&config_map, StrLit("keymap"));
-  Assert(keymap_section != NULL);
+  Config config  = {0};
+  bool   updated = LoadConfig(allocator, &config);
+  Debugf("updated: %d", updated);
+  PrintConfig(allocator, &config);
 
   // String       core_dir = Fs_PathJoin(allocator, root, StrLit("core"));
-  // Array_String elements = Array_String_Init(allocator, 10);
+  // ArrayString elements = ArrayString_Init(allocator, 10);
   // FsErrors     err      = Fs_ReadDir(allocator, core_dir, &elements);
   // if (err != FsErrors_None)
   // {
@@ -48,7 +36,7 @@ int main(void)
   // String wm_main_file = Fs_PathJoin(allocator, root, StrLit("wm/main.c"));
   // String wm_main_cont = Fs_ReadFileFull(allocator, wm_main_file);
   // Debugf("wm's main.c file:\n%s", wm_main_cont);
-  // Array_String lines = StrSplit(allocator, wm_main_cont, StrLit("\n"));
+  // ArrayString lines = StrSplit(allocator, wm_main_cont, StrLit("\n"));
   // Debugf("lines: %zu", lines.size);
   // for (u64 i = 0; i < lines.size; i += 1)
   // {

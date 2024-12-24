@@ -19,7 +19,7 @@ if test "$build_mode" = "debug"
   set debug_flags "-DDEBUG_BUILD" "-O0" "-g" "-DDEBUG" "-fsanitize=address" #address,memory,thread
   set flags $flags $debug_flags
 else if test "$build_mode" = "release"
-  set release_flags "-DRELEASE_BUILD" "-O3" "-DNDEBUG" "-flto" "-fwhole-program-vtables" "-march=native" "-s"
+  set release_flags "-DRELEASE_BUILD" "-O3" "-DNDEBUG" "-flto" "-fwhole-program-vtables" "-s" "-march=native" "-ftree-vectorize" "-msse"
   set flags $flags $release_flags
 else
   echo "Error: build mode is invalid." ^&2

@@ -9,11 +9,11 @@ typedef struct
 {
   enum
   {
-    IniValue_i64,
-    IniValue_u64,
-    IniValue_f64,
-    IniValue_bool,
-    IniValue_String,
+    IniValue_i64    = 0,
+    IniValue_u64    = 1,
+    IniValue_f64    = 2,
+    IniValue_bool   = 3,
+    IniValue_String = 4,
   } tag;
   union
   {
@@ -21,7 +21,7 @@ typedef struct
     u64    value_u64;
     f64    value_f64;
     bool   value_bool;
-    String value_string;
+    String value_String;
   } data;
 } IniValue;
 
@@ -31,13 +31,13 @@ typedef struct
 {
   enum
   {
-    IniSection_Map,
-    IniSection_Array,
+    IniSection_Map   = 0,
+    IniSection_Array = 1,
   } tag;
   union
   {
-    IniValueMap  map;
-    Array_String array;
+    IniValueMap map;
+    ArrayString array;
   } data;
 } IniSection;
 

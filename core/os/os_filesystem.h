@@ -52,7 +52,7 @@ Example:
     Debugf("%zuth element, is_dir: %d, path: %s", i, is_dir, elem_path);
   }
 */
-internal FsErrors Fs_ReadDir(Allocator allocator, String directory_path, Array_String *array_str);
+internal FsErrors Fs_ReadDir(Allocator allocator, String directory_path, ArrayString *array_str);
 
 internal bool     Fs_IsFile(Allocator allocator, String path);
 internal FsErrors Fs_RemoveFile(Allocator allocator, String path);
@@ -62,7 +62,7 @@ Example:
   String wm_main_file = Fs_PathJoin(allocator, root, StrLit("wm/main.c"));
   String wm_main_cont = Fs_ReadFileFull(allocator, wm_main_file);
   Debugf("wm's main.c file:\n%s", wm_main_cont);
-  Array_String lines = StrSplit(allocator, wm_main_cont, StrLit("\n"));
+  ArrayString lines = StrSplit(allocator, wm_main_cont, StrLit("\n"));
   Debugf("lines: %zu", lines.size);
   for (u64 i = 0; i < lines.size; i += 1)
   {
@@ -80,7 +80,7 @@ internal bool     Fs_DirExistsCstr(char *directory_path);
 internal bool     Fs_PathExistsCstr(char *path);
 internal bool     Fs_IsDirCstr(char *path);
 internal FsErrors Fs_ReadDirCstr(Allocator allocator, char *directory_path,
-                                 Array_String *array_str);
+                                 ArrayString *array_str);
 internal bool     Fs_IsFileCstr(char *path);
 internal FsErrors Fs_RemoveFileCstr(char *path);
 internal String   Fs_ReadFileFullCstr(Allocator allocator, char *path);
