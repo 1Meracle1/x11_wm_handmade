@@ -6,14 +6,17 @@
 #define ArrayTemplate(type) ArrayTemplatePrefix(type, Array##type, Array##type##_)
 
 #define ArrayTemplatePrefix(type, struct_name, funcs_prefix)                                       \
+  ArrayTemplatePrefixIndexType(type, struct_name, funcs_prefix, u64)
+
+#define ArrayTemplatePrefixIndexType(type, struct_name, funcs_prefix, index_type)                  \
   typedef struct                                                                                   \
   {                                                                                                \
-    type *data;                                                                                    \
-    u64   size;                                                                                    \
-    u64   capacity;                                                                                \
+    type      *data;                                                                               \
+    index_type size;                                                                               \
+    index_type capacity;                                                                           \
   } struct_name;                                                                                   \
                                                                                                    \
-  internal struct_name funcs_prefix##Init(Allocator allocator, u64 capacity)                       \
+  internal struct_name funcs_prefix##Init(Allocator allocator, index_type capacity)                \
   {                                                                                                \
     Assert(capacity > 0);                                                                          \
     struct_name res;                                                                               \
@@ -25,11 +28,6 @@
       res.capacity = 0;                                                                            \
     }                                                                                              \
     return res;                                                                                    \
-  }                                                                                                \
-                                                                                                   \
-  internal struct_name funcs_prefix##InitDefault(Allocator allocator)                              \
-  {                                                                                                \
-    return funcs_prefix##Init(allocator, 1);                                                       \
   }                                                                                                \
                                                                                                    \
   internal void funcs_prefix##Deinit(Allocator allocator, struct_name *array)                      \
@@ -57,8 +55,8 @@
     AllocationError res = AllocationError_None;                                                    \
     if (array->capacity == array->size)                                                            \
     {                                                                                              \
-      u64   new_capacity = Max(array->capacity * 2, 1);                                            \
-      type *data         = Alloc(type, new_capacity);                                              \
+      index_type new_capacity = Max(array->capacity * 2, 1);                                       \
+      type      *data         = Alloc(type, new_capacity);                                         \
       if (!data)                                                                                   \
       {                                                                                            \
         res = AllocationError_OutOfMemory;                                                         \
@@ -79,14 +77,32 @@
     return res;                                                                                    \
   }                                                                                                \
                                                                                                    \
+  internal void funcs_prefix##UnorderedRemove(struct_name *array, index_type index)                \
+  {                                                                                                \
+    if (index + 1 < array->size)                                                                   \
+    {                                                                                              \
+      SwapT(array->data[index], array->data[array->size - 1], type);                               \
+    }                                                                                              \
+    array->size -= 1;                                                                              \
+  }                                                                                                \
+                                                                                                   \
+  internal void funcs_prefix##OrderedRemove(struct_name *array, index_type index)                  \
+  {                                                                                                \
+    for (index_type i = index; i < array->size - 1; i += 1)                                        \
+    {                                                                                              \
+      SwapT(array->data[i], array->data[i + 1], type);                                             \
+    }                                                                                              \
+    array->size -= 1;                                                                              \
+  }                                                                                                \
+                                                                                                   \
   internal AllocationError funcs_prefix##Append(Allocator allocator, struct_name *dest,            \
                                                 struct_name source)                                \
   {                                                                                                \
     AllocationError res = AllocationError_None;                                                    \
     if (source.size + dest->size > dest->capacity)                                                 \
     {                                                                                              \
-      u64   new_capacity = source.size + dest->size;                                               \
-      type *data         = Alloc(type, new_capacity);                                              \
+      index_type new_capacity = source.size + dest->size;                                          \
+      type      *data         = Alloc(type, new_capacity);                                         \
       if (!data)                                                                                   \
       {                                                                                            \
         res = AllocationError_OutOfMemory;                                                         \
@@ -101,7 +117,7 @@
     }                                                                                              \
     if (res == AllocationError_None)                                                               \
     {                                                                                              \
-      for (u64 i = 0; i < source.size; i += 1)                                                     \
+      for (index_type i = 0; i < source.size; i += 1)                                              \
       {                                                                                            \
         dest->data[dest->size] = source.data[i];                                                   \
         dest->size += 1;                                                                           \
@@ -110,18 +126,18 @@
     return res;                                                                                    \
   }                                                                                                \
                                                                                                    \
-  internal bool funcs_prefix##Empty(struct_name array)                                             \
+  internal bool funcs_prefix##IsEmpty(struct_name array)                                           \
   {                                                                                                \
     return array.size == 0;                                                                        \
   }                                                                                                \
                                                                                                    \
-  internal type funcs_prefix##Nth(struct_name array, u64 index)                                    \
+  internal type funcs_prefix##Nth(struct_name array, index_type index)                             \
   {                                                                                                \
     Assert(index < array.size);                                                                    \
     return array.data[index];                                                                      \
   }                                                                                                \
                                                                                                    \
-  internal type *funcs_prefix##NthPtr(struct_name *array, u64 index)                               \
+  internal type *funcs_prefix##NthPtr(struct_name *array, index_type index)                        \
   {                                                                                                \
     Assert(index < array->size);                                                                   \
     return &array->data[index];                                                                    \

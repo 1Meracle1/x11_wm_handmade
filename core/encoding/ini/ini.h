@@ -25,7 +25,9 @@ typedef struct
   } data;
 } IniValue;
 
-HashMapTemplatePrefix(String, IniValue, IniValueMap, IniValueMap_);
+EmptyKeyValueFuncTemplate(String, IniValue);
+HashMapTemplateFull(String, IniValue, IniValueMap, IniValueMap_, HashFromString, StrEquals,
+                    StrIsEmpty, EmptyKeyValueDefault_String_IniValue, u64);
 
 typedef struct
 {
@@ -41,7 +43,9 @@ typedef struct
   } data;
 } IniSection;
 
-HashMapTemplatePrefix(String, IniSection, IniMap, IniMap_);
+EmptyKeyValueFuncTemplate(String, IniSection);
+HashMapTemplateFull(String, IniSection, IniMap, IniMap_, HashFromString, StrEquals,
+                    StrIsEmpty, EmptyKeyValueDefault_String_IniSection, u64);
 
 /*
 Example:

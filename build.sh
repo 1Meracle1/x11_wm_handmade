@@ -27,12 +27,18 @@ else
 end
 
 set sources ""
+set link_libraries ""
 if test "$program_name" = "wm"
   set sources "wm/main.c"
+  set link_libraries  "-lX11" "-lX11-xcb" "-lxcb" "-lxcb-cursor" "-lxcb-icccm" "-lxcb-ewmh" "-lxcb-randr"
+else if test "$program_name" = "testbed_window"
+  set sources "testbed_window/main.c"
+  set link_libraries  "-lX11" "-lGL" "-lEGL"
 else
   echo "Error: program name is invalid." ^&2
   exit 1
 end
+set flags $flags $link_libraries
 
 set build_folder "build"
 if not test -d $build_folder

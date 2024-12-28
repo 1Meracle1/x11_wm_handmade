@@ -196,6 +196,17 @@ internal i64 StrIndexByte(String s, u8 byte)
   return res;
 }
 
+internal u64 HashFromString(String key, u64 max)
+{
+  u64 hash = 5381;
+  for (u64 i = 0; i < key.size; i += 1)
+  {
+    hash = ((hash << 5) + hash) + key.data[i];
+  }
+  hash = hash % max;
+  return hash;
+}
+
 internal StrParseError U64FromStr(String s, u64 *value)
 {
   StrParseError err = StrParseError_None;
@@ -269,7 +280,7 @@ internal StrParseError F64FromStr(String s, f64 *value)
       *value = (f64)whole_num;
       if (floating_str.size != 0)
       {
-        *value += (f64)floating_num / (pow(10,  floating_str.size));
+        *value += (f64)floating_num / (pow(10, floating_str.size));
       }
     }
   }
@@ -383,7 +394,28 @@ internal String ArrayString_Join(Allocator allocator, ArrayString arr, String se
 internal ArrayString StrSplit(Allocator allocator, String s, String sep)
 {
   Assert(sep.size != 0);
-  ArrayString res = ArrayString_InitDefault(allocator);
+  ArrayString res = ArrayString_Init(allocator, 1);
+  for (u64 i = 0; i < s.size; i += sep.size)
+  {
+    u64 pos = StrFindSubStr(s, sep, i);
+    if (pos != s.size)
+    {
+      ArrayString_Push(allocator, &res, StrSubstr(s, i, pos));
+      i = pos;
+    }
+    else
+    {
+      break;
+    }
+  }
+  return res;
+}
+
+internal ArrayString StrSplitInitCapacity(Allocator allocator, String s, String sep,
+                                          u64 expected_elements)
+{
+  Assert(sep.size != 0);
+  ArrayString res = ArrayString_Init(allocator, expected_elements);
   for (u64 i = 0; i < s.size; i += sep.size)
   {
     u64 pos = StrFindSubStr(s, sep, i);

@@ -1,127 +1,54 @@
-#include "../core/core.h"
 #include "config.h"
+#include "xcb.h"
 
 #include "../core/core.c"
 #include "config.c"
-
-HashMapTemplate(String, i64);
+#include "xcb.c"
+#include "workspace.c"
+#include "monitor.c"
+#include "randr.c"
+#include "window.c"
 
 int main(void)
 {
-  Arena    *arena     = ArenaInit(Megabytes(1));
+  Arena    *arena     = ArenaInit(Gigabytes(1));
   Allocator allocator = ArenaAllocator(arena);
 
-  String root = StrLit(PROJECT_DIR);
+  // String root_dir    = StrLit(PROJECT_DIR);
+  String wm_name = StrLit("X11 Handmade WM");
 
   Config config  = {0};
-  bool   updated = LoadConfig(allocator, &config);
-  Debugf("updated: %d", updated);
-  PrintConfig(allocator, &config);
+  if (!LoadConfig(allocator, &config) || !Xcb_Init(allocator, wm_name))
+  {
+    Error("Failed to complete an initialization step");
+    return 1;
+  }
+  // PrintConfig(allocator, &config);
 
-  // String       core_dir = Fs_PathJoin(allocator, root, StrLit("core"));
-  // ArrayString elements = ArrayString_Init(allocator, 10);
-  // FsErrors     err      = Fs_ReadDir(allocator, core_dir, &elements);
-  // if (err != FsErrors_None)
-  // {
-  //   Errorf("Failed to read dir elements, err: %d, path: %s", err, core_dir);
-  // }
-  // Debugf("Retrieved %zu items from folder %s", elements.size, core_dir);
-  // for (u64 i = 0; i < elements.size; i += 1)
-  // {
-  //   String elem_path = elements.data[i];
-  //   bool   is_dir    = Fs_IsDir(allocator, elem_path);
-  //   Debugf("%zuth element, is_dir: %d, path: %s", i, is_dir, elem_path);
-  // }
+  const u64 frame_time = Seconds(1) / 60;
+  bool      running    = true;
+  for (; running;)
+  {
+    u64 frame_start = TimeNow();
 
-  // String wm_main_file = Fs_PathJoin(allocator, root, StrLit("wm/main.c"));
-  // String wm_main_cont = Fs_ReadFileFull(allocator, wm_main_file);
-  // Debugf("wm's main.c file:\n%s", wm_main_cont);
-  // ArrayString lines = StrSplit(allocator, wm_main_cont, StrLit("\n"));
-  // Debugf("lines: %zu", lines.size);
-  // for (u64 i = 0; i < lines.size; i += 1)
-  // {
-  //   Debugf("line: %zu, str: %.*s", i, StrFmtVal(lines.data[i]));
-  // }
+    Temp temp = TempBegin(arena);
+    {
+      if(!Xcb_PollEvents())
+      {
+        running = false;
+      }
+    }
+    TempEnd(temp);
 
-  // const u64 frame_time = Seconds(1) / 60;
-  // for (;;)
-  // {
-  //   u64 frame_start = TimeNow();
+    u64 frame_end = TimeNow();
+    u64 diff      = frame_end - frame_start;
+    if (diff < frame_time)
+    {
+      Sleep(frame_time - diff);
+    }
+  }
 
-  //   Temp temp = TempBegin(arena);
-  //   {
-  //     int *heap_allocated_int = Alloc(int, 1);
-  //     int *array_of_ints      = Alloc(int, 10);
-  //   }
-  //   {
-  //     String s     = StrLit("123");
-  //     u64    value = 0;
-  //     Assert(U64FromStr(s, &value) == StrParseError_None);
-  //     Assert(value == 123);
-  //   }
-  //   {
-  //     String s     = StrLit("123.2");
-  //     f64    value = 0;
-  //     Assert(F64FromStr(s, &value) == StrParseError_None);
-  //     Debugf("%f", value);
-  //   }
-  //   {
-  //     String s     = StrLit("");
-  //     f64    value = 0;
-  //     Assert(F64FromStr(s, &value) == StrParseError_EmptyString);
-  //   }
-  //   {
-  //     String s     = StrLit(":");
-  //     f64    value = 0;
-  //     Assert(F64FromStr(s, &value) == StrParseError_InvalidNumberString);
-  //   }
-  //   {
-  //     HashMap_StringToi64 hash_map =
-  //         HashMap_StringToi64_InitDefault(allocator, HashFromString, StrEquals, StrIsEmpty);
-  //     String key            = StrLit("Hello");
-  //     i64    value          = -2;
-  //     i64   *inserted_value = HashMap_StringToi64_Push(allocator, &hash_map, key, value);
-  //     Assert(value == *inserted_value);
-  //   }
-  //   {
-  //     HashMap_StringToi64 hash_map =
-  //         HashMap_StringToi64_Init(allocator, 1, HashFromString, StrEquals, StrIsEmpty);
-  //     String key1            = StrLit("Hello");
-  //     i64    value1          = -2;
-  //     i64   *inserted_value1 = HashMap_StringToi64_Push(allocator, &hash_map, key1, value1);
-  //     Assert(value1 == *inserted_value1);
-
-  //     String key2            = StrLit("Someone");
-  //     i64    value2          = 50;
-  //     i64   *inserted_value2 = HashMap_StringToi64_Push(allocator, &hash_map, key2, value2);
-  //     Assert(value2 == *inserted_value2);
-
-  //     Assert(*HashMap_StringToi64_Find(&hash_map, key1) == value1);
-  //     Assert(*HashMap_StringToi64_Find(&hash_map, key2) == value2);
-  //     Assert(HashMap_StringToi64_Find(&hash_map, StrLit("some other key")) == NULL);
-  //   }
-  //   {
-  //     u64 now = TimeNow();
-  //     Debugf("time now nanos: %zu", now);
-  //     String s = StringFromTime(allocator, now);
-  //     Debugf("time now date: %.*s", StrFmtVal(s));
-  //   }
-  //   {
-  //     u64 now = TimeNow();
-  //     Debugf("time now nanos: %zu", now);
-  //     String s = StringFromTimeRFC3339(allocator, now);
-  //     Debugf("time now date RFC3339: %.*s", StrFmtVal(s));
-  //   }
-
-  //   TempEnd(temp);
-
-  //   u64 frame_end = TimeNow();
-  //   u64 diff      = frame_end - frame_start;
-  //   if (diff < frame_time)
-  //   {
-  //     Sleep(frame_time - diff);
-  //   }
-  // }
+  Xcb_Deinit();
   ArenaDeinit(arena);
   return 0;
 }

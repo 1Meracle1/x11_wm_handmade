@@ -1,5 +1,7 @@
 #!/bin/fish
 
+./build.sh wm debug
+
 set XEPHYR $(whereis -b Xephyr | sed -E 's/^.*: ?//')
 if [ -z "$XEPHYR" ]
   echo "Xephyr not found"

@@ -10,7 +10,7 @@ internal bool LoadConfig(Allocator allocator, Config *config)
   u64    last_mod_time = Fs_LastModifiedTime(allocator, path);
   if (g_last_mod_time < last_mod_time)
   {
-    Debug("Config: loading");
+    Debug("Loading updated config from disk");
     g_last_mod_time   = last_mod_time;
     IniMap config_map = Ini_LoadMapFromPath(allocator, path);
     // ArrayPair_StringToIniSection sections   = IniMap_KeyValuePairs(allocator, config_map);
@@ -145,6 +145,7 @@ internal bool LoadConfig(Allocator allocator, Config *config)
 
       updated = true;
     }
+    IniMap_Deinit(allocator,&config_map);
   }
   return updated;
 }

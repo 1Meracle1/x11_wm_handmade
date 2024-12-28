@@ -95,7 +95,7 @@ internal IniMap Ini_LoadMapFromPath(Allocator allocator, String path)
 
 internal IniMap Ini_LoadMapFromString(Allocator allocator, String src)
 {
-  IniMap      res          = IniMap_Init(allocator, 50, HashFromString, StrEquals, StrIsEmpty);
+  IniMap      res          = IniMap_Init(allocator, 50);
   String      section_name = {0};
   IniSection  section      = {0};
   ArrayString lines        = StrSplit(allocator, src, StrLit("\n"));
@@ -136,7 +136,7 @@ internal IniMap Ini_LoadMapFromString(Allocator allocator, String src)
         {
           section_name     = StrSubstr(line, 1, end_idx);
           section.tag      = IniSection_Map;
-          section.data.map = IniValueMap_Init(allocator, 50, HashFromString, StrEquals, StrIsEmpty);
+          section.data.map = IniValueMap_Init(allocator, 50);
         }
         continue;
       }

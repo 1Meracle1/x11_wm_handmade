@@ -48,6 +48,8 @@ Returns -1 on failure to find the provided byte
 */
 internal i64 StrIndexByte(String s, u8 byte);
 
+internal u64 HashFromString(String key, u64 max);
+
 typedef enum
 {
   StrParseError_None,
@@ -80,6 +82,8 @@ ArrayTemplate(String);
 
 internal String      ArrayString_Join(Allocator allocator, ArrayString arr, String sep);
 internal ArrayString StrSplit(Allocator allocator, String s, String sep);
+internal ArrayString StrSplitInitCapacity(Allocator allocator, String s, String sep,
+                                          u64 expected_elements);
 // internal ArrayString StrSplitMulti(Allocator allocator, String s, ArrayString substrs);
 // internal ArrayString StrSplitLines(Allocator allocator, String s);
 

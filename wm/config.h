@@ -1,5 +1,5 @@
-#ifndef CONIFG_H
-#define CONIFG_H
+#ifndef WM_CONFIG_H
+#define WM_CONFIG_H
 
 #include "../core/core.h"
 
